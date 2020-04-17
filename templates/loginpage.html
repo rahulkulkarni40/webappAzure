@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+</head>
+ <a href="/">Back</a>
+<body onload="PopulateDropDownList()">
+<br><br><br><br><br>
+<p>
+    This is Login Page Which contain log in for specific depart with user id and password
+</p>
+<center>
+<form id="loginform">
+<table style="border:1px solid black;">
+    <tr><td><label for="PartitionKey">Department:</label></td>
+        <td><select  id="PartitionKey" name="PartitionKey"></select></td></tr>
+   <tr><td><label for="RowKey">Username:</label></td>
+  <td><input type="text" id="RowKey" name="RowKey"></td></tr>
+  <tr><td><label for="pwd">Password:</label></td>
+  <td><input type="password" id="pwd" name="pwd"></td></tr>
+<tr><td><input type="submit" value="Submit"></td>
+    <td><input type="reset"></td></tr>
+</table>
+</form>
+</center>
+
+
+<script type="text/javascript">
+        function PopulateDropDownList() {
+           //Build an array containing Customer records.
+           var request = new XMLHttpRequest();
+           var url = "/getpartations";
+           request.open('GET', url, /* async = */ false);
+             request.send( null );
+    //console.log(request.responseText);
+    var customers = JSON.parse(request.responseText);
+    //console.log(customers);
+
+            var count = Object.keys(customers).length;
+            //console.log(count);
+            //Add the Options to the DropDownList.
+            for (var i = 0; i < count; i++) {
+                var option = document.createElement("OPTION");
+                //console.log(Object.keys(customers));
+                //Set Customer Name in Text part.
+                option.innerHTML = Object.values(customers);
+                //console.log(Object.values(customers));
+                //Set CustomerId in Value part.
+                option.value = Object.values(customers);
+                //Add the Option element to DropDownList.
+                PartitionKey.options.add(option);
+            }
+        }
+    </script>
+<script>
+
+var testForm = document.getElementById('loginform');
+ testForm.onsubmit = function(event) {
+  event.preventDefault();
+var pkey = document.getElementById("PartitionKey").value;
+var uname = document.getElementById("RowKey").value;
+var password = document.getElementById("pwd").value;
+    var request = new XMLHttpRequest();
+    var url1 = "/getusername/" + pkey +"," + uname + "," +password;
+   // console.log(url1);
+     request.open('GET', url1, /* async = */ false);
+    request.send( null );
+    //var resp = request.responseText;
+//console.log(resp);
+    if (request.responseText == "No Data"){
+     alert("Username and Password Invalid");
+    }
+    else{
+   window.location.href = "/test";
+    }
+  }
+
+</script>
+</body>
+</html>

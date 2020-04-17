@@ -1,0 +1,111 @@
+<html>
+<body>
+ <a href="/">Home</a>
+<form id="myForm">
+  <label for="PartitionKey">PartitionKey:</label>
+  <input type="text" id="PartitionKey" name="PartitionKey" onchange=" getid();"><br><br>
+  <label for="RowKey">RowKey:</label>
+  <input type="text" id="RowKey" name="RowKey" readonly><br><br>
+  <label for="ID">ID:</label>
+  <input type="text" id="ID" name="ID" readonly><br><br>
+  <label for="priority">priority:</label>
+  <input type="text" id="priority" name="priority"><br><br>
+  <label for="stock">stock:</label>
+  <input type="text" id="stock" name="stock"><br><br>
+  
+  <input type="Submit" value="Submit" >
+</form>
+<script>
+  var testForm = document.getElementById('myForm');
+  testForm.onsubmit = function(event) {
+    event.preventDefault();
+    var request = new XMLHttpRequest();
+    // POST to httpbin which returns the POST data as JSON
+    request.open('POST', '/azpost/', /* async = */ false);
+
+    var formData = new FormData(document.getElementById('myForm'));
+    request.send(formData);
+   alert(request.responseText);
+   window.location.reload();
+  }
+</script>
+<script>
+function getid() {
+  var parti = document.getElementById('PartitionKey').value;
+   var request = new XMLHttpRequest();
+   var url = "/getrowid/" + parti;
+    // POST to httpbin which returns the POST data as JSON
+    request.open('GET', url, /* async = */ false);
+    request.send( null );
+    //console.log(request.responseText);
+    newid = parseInt(request.responseText) + 1;
+    //console.log(newid);
+    document.getElementById('RowKey').value = newid;
+
+    var url1 = "/getid/" + parti;
+    // POST to httpbin which returns the POST data as JSON
+    request.open('GET', url, /* async = */ false);
+    request.send( null );
+   // console.log(request.responseText);
+    newid1 = parseInt(request.responseText) + 1;
+    //console.log(newid1);
+    document.getElementById('ID').value = newid1;
+ }
+
+</script>
+<form id="myForm2">
+<label for="keyname">keyname:</label>
+  <input type="text" id="keyname" name="keyname"><br><br>
+  <label for="keyval">Value:</label>
+  <input type="text" id="keyval" name="keyval"><br><br>
+ <input type="Submit" value="Get"><br><br>
+ <hr />
+<div id="dvTable"></div>
+ 
+</form>
+<script>
+  var testForm = document.getElementById('myForm2');
+  testForm.onsubmit = function(event) {
+    event.preventDefault();
+    var request = new XMLHttpRequest();
+    // POST to httpbin which returns the POST data as JSON
+    request.open('POST', '/azget/', /* async = */ false);
+    var formData = new FormData(document.getElementById('myForm2'));
+    request.send(formData);
+    //console.log(request.responseText);
+	var customers = JSON.parse(request.responseText);
+	console.log(customers[0]);
+	//Create a HTML Table element.
+        var table = document.createElement("TABLE");
+        table.border = "1";
+		
+		var col = Object.keys(customers[0]);
+		console.log(col);
+ 
+        //Get the count of columns.
+        var columnCount = col.length;
+		console.log(columnCount);
+        //Add the header row.
+        var row = table.insertRow(-1);
+        for (var i = 0; i < columnCount; i++) {
+            var headerCell = document.createElement("TH");
+            headerCell.innerHTML = col[i];
+            row.appendChild(headerCell);
+        }
+ 
+        //Add the data rows.
+        for (var i = 0; i < customers.length; i++) {
+            row = table.insertRow(-1);
+            for (var j = 0; j < columnCount; j++) {
+                var cell = row.insertCell(-1);
+                cell.innerHTML = customers[i][col[j]];
+            }
+        }
+ 
+        var dvTable = document.getElementById("dvTable");
+        dvTable.innerHTML = "";
+        dvTable.appendChild(table);
+  }
+</script>
+</body>
+</html>
